@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: result-app-deployment
+  namespace: blue
+  labels:
+    app: result-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: result-app
+  template:
+    metadata:
+      labels:
+        app: result-app
+    spec:
+      imagePullSecrets:
+        - name: acr-secret 
+      nodeSelector:
+            env: blue 
+      containers:
+      - name: result-app-container
+        image: shan365.azurecr.io/result-app:latestv1
+        ports:
+        - containerPort: 80

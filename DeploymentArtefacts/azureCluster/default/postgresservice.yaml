@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres
+  ports:
+    - port: 5432        # Service port (what other pods use)
+      targetPort: 5432  # Pod container port
