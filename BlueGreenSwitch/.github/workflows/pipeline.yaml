@@ -1,0 +1,28 @@
+name: traffic-switch-pipeline
+on: push
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Load kubeconfig
+          env:
+            KUBE_CONFIG_DATA: ${{secrets.KUBE_CONFIG_DATA}}
+          run: |
+            mkdir -p $HOME/.kube
+            echo "$KUBE_CONFIG_DATA"
+            echo "$KUBE_CONFIG_DATA"|base64 --decode > $HOME/.kube/config
+            chmod 600 $HOME/.kube/config
+        - name: traffic swich
+          run: |
+             if kubectl get ingress voting-app-ingress -n green > /dev/null 2>&1; then
+               kubectl get ingress -n green -o yaml >temp.yaml
+               sed -i 's/green/blue/g' temp.yaml
+               kubectl delete ingress/voting-app-ingress -n green
+               kubectl apply -f temp.yaml
+             else
+               kubectl get ingress -n blue -o yaml >temp.yaml
+               sed -i 's/blue/green/g' temp.yaml
+               kubectl delete ingress/voting-app-ingress -n blue
+               kubectl apply -f temp.yaml
+
+             fi   

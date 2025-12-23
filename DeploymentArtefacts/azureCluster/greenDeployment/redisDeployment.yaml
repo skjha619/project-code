@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: green
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      imagePullSecrets:
+        - name: acr-secret 
+      nodeSelector:
+            env: green 
+      containers:
+        - name: redis
+          image: shan365.azurecr.io/redis:latest         # or another Redis version
+          ports:
+            - containerPort: 6379
